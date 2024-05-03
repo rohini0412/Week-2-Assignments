@@ -46,4 +46,110 @@ const app = express();
 
 app.use(bodyParser.json());
 
+const todos = [] ;
+app.get("/",(req,res)=>{
+  res.status(200).send("todos")
+})
+
+app.get("/todos",(req,res)=>{
+   res.status(200).send(todos)
+})
+
+app.get("/todos/:id",(req,res)=>{
+  function findById(arr ,index){
+    for(var i=0 ;i<arr.length;i++){
+     if(arr[i].id==index){
+       return i ;
+     }
+     else{
+       return -1 ;
+     }
+    }
+  }
+ 
+   const todoindex = findById(todos ,req.params.id) ;
+   if(todoindex == -1){
+    res.status(404).send("id not found baby")
+   }
+   else{
+    res.status(200).send(todos[todoindex]) ;
+   }
+
+})
+
+app.post("/todos" ,(req,res)=>{
+  const newtodo ={
+    id : req.body.id ,
+    description : req.body.description ,
+    title : req.body.title ,
+    completed : false 
+  }
+
+  todos.push(newtodo) ;
+  res.status(201).send(newtodo.id)
+})
+
+app.put("/todos/:id",(req,res)=>{
+  function findById(arr ,index){
+    for(var i=0 ;i<=arr.length;i++){
+     if(arr[i].id==index){
+       return i ;
+     }
+     else{
+       return -1 ;
+     }
+    }
+  }
+const todoindex = findById(todos ,parseInt(req.params.id)) 
+if(todoindex ==-1){
+  res.status(404).send()
+}
+else{
+if(req.body.title){
+  todos[todoindex].title = req.body.title ;
+}
+if(req.body.description){
+  todos[todoindex].description = req.body.description ;
+}
+if(req.body.completed){
+  todos[todoindex].completed = req.body.completed ; 
+}
+res.status(200).send(todos[todoindex])
+}
+
+
+})
+
+app.delete("/todos/:id" ,(req,res)=>{
+  function findById(arr ,index){
+    for(var i=0 ;i<arr.length;i++){
+     if(arr[i].id==index){
+       return i ;
+     }
+     else{
+       return -1 ;
+     }
+    }
+  }
+  const todoindex = findById(todos ,req.body.id)  ;
+  if(todoindex ==-1){
+    res.status(404).send()
+  }
+
+  function newArray(arr ,index){
+    const newarray =[] ;
+    for(var i=0 ;i<arr.length ;i++){
+      if(arr[i].id != index){
+        newarray.push(arr[i]) ; 
+      }
+    }
+    return newarray ;
+  }
+  todos = newArray(todos ,todoindex) ;
+
+  res.status(200).send("found and deleted successfully")
+})
+
+app.listen(3143);
+
 module.exports = app;
